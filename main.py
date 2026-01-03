@@ -63,7 +63,7 @@ def generate_lyrics(
     for tok in output_tokens:
         if tok == "<line>":
             text.append("\n")
-        elif tok == "<STANZA>":
+        elif tok == "<stanza>":
             text.append("\n\n")
         elif tok == "<UNK>":
             pass
@@ -74,7 +74,7 @@ def generate_lyrics(
 
 def main():
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    checkpoint = torch.load("checkpoints/checkpoint.pt", map_location=device)
+    #checkpoint = torch.load("checkpoints/checkpoint.pt", map_location=device)
 
     train_loader, val_loader, test_loader, vocab = preprocess_data()
     vocab_size = len(vocab)
@@ -89,20 +89,20 @@ def main():
         pad_idx=pad_idx
     ).to(device)
 
-    model.load_state_dict(checkpoint["model_state"])
-    model.to(device)
-    model.eval()
+    #model.load_state_dict(checkpoint["model_state"])
+    #model.to(device)
+    #model.eval()
 
-    lyrics = generate_lyrics(
-        model=model,
-        vocab=vocab,
-        max_tokens=400,
-        temperature=0.9,
-        device=device
-    )
+    #lyrics = generate_lyrics(
+    #    model=model,
+    #    vocab=vocab,
+    #    max_tokens=400,
+    #    temperature=0.9,
+    #    device=device
+    #)
 
-    print(lyrics)
-    return
+    #print(lyrics)
+    #return
 
     optimizer = torch.optim.AdamW(model.parameters(), lr=3e-4)
     criterion = nn.CrossEntropyLoss(ignore_index=pad_idx)

@@ -111,18 +111,20 @@ def generate_rap_song_lyrics():
     en = dataset_csv[is_english]
 
     subset = (
-        en[en["tag"].isin(["rap"])]
+        en[en["tag"].isin(["pop"])]
         .dropna(subset=["lyrics", "year"])
-        .query("1980 <= year <= 2010")
+        .query("2000 <= year <= 2010")
         .drop_duplicates(subset=["title", "artist"])
         .reset_index(drop=True)
     )
 
     subset["lyrics"] = subset["lyrics"].map(clean_lyrics)
-    subset.to_csv("rap_song_lyrics.csv", index=False)
+    subset = subset[subset["lyrics"].str.strip().astype(bool)]
+    subset = subset.sample(n=10000, random_state=1337)
+    subset.to_csv("pop_song_lyrics.csv", index=False)
 
 def preprocess_data():
-    df = pd.read_csv("rap_song_lyrics_test.csv")
+    df = pd.read_csv("pop_song_lyrics.csv")
 
     # TRAIN/VAL/TEST - 80/10/10
     train_df, temp_df = train_test_split(df, test_size=0.2, random_state=42)
