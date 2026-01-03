@@ -6,20 +6,20 @@ from collections import Counter
 from sklearn.model_selection import train_test_split
 
 SPECIAL_TOKENS = {
-    "<PAD>": 0,
-    "<UNK>": 1,
-    "<SOS>": 2,
-    "<EOS>": 3,
-    "<LINE>": 4, # represents the newline symbol at the end of the line
-    "<STANZA>": 5, # represents the double newline symbol that marks the beginnning of a new verse
+    "<pad>": 0,
+    "<unk>": 1,
+    "<sos>": 2,
+    "<eos>": 3,
+    "<line>": 4, # represents the newline symbol at the end of the line
+    "<stanza>": 5, # represents the double newline symbol that marks the beginnning of a new verse
 }
 
 def clean_lyrics(text):
     text = re.sub(r"\[.*?\]", " ", text)
     text = re.sub(r"\(.*?\)", " ", text)
     text = text.replace("\r", "\n")
-    text = re.sub(r"\n{2,}", " <STANZA> ", text) # new verse break
-    text = re.sub(r"\n", " <LINE> ", text) # single line break
+    text = re.sub(r"\n{2,}", " <stanza> ", text) # new verse break
+    text = re.sub(r"\n", " <line> ", text) # single line break
     text = re.sub(r"[^a-zA-Z0-9'?!.,<>\s]", " ", text)
     text = re.sub(r"\s+", " ", text).strip()
     return text.lower()
@@ -54,13 +54,13 @@ class Vocab:
 
     def encode(self, tokens):
         if isinstance(tokens, str):
-            return torch.tensor(self.stoi.get(tokens, self.stoi["<UNK>"]))
-        return torch.tensor([self.stoi.get(tok, self.stoi["<UNK>"]) for tok in tokens])
+            return torch.tensor(self.stoi.get(tokens, self.stoi["<unk>"]))
+        return torch.tensor([self.stoi.get(tok, self.stoi["<unk>"]) for tok in tokens])
 
 class LyricsDataset(Dataset):
     def __init__(self, token_lists, vocab, seq_len=100, stride=1):
         """
-        token_lists: list of tokenized lyrics (each already includes <SOS>/<LINE>/<STANZA>/<EOS>)
+        token_lists: list of tokenized lyrics (each already includes <sos>/<line>/<stanza>/<eos>)
         vocab: Vocab instance
         seq_len: number of input tokens per sample
         """
@@ -89,7 +89,7 @@ def build_vocab(token_lists, max_size=-1, min_freq=5):
     return Vocab(freqs, max_size=max_size, min_freq=min_freq)
 
 def df_to_token_lists(frame):
-    return [["<SOS>", *lyric.split(), "<EOS>"] for lyric in frame["lyrics"]]
+    return [["<sos>", *lyric.split(), "<eos>"] for lyric in frame["lyrics"]]
 
 def generate_rap_song_lyrics():
     dataset_csv = pd.read_csv("song_lyrics.csv")
@@ -143,7 +143,7 @@ def preprocess_data():
 
     print(len(vocab))
 
-    unk_id = vocab.stoi["<UNK>"]
+    unk_id = vocab.stoi["<unk>"]
     unk_count = total = 0
     for tokens in val_tokens:
         ids = vocab.encode(tokens)

@@ -41,7 +41,7 @@ def generate_lyrics(
 ):
     model.eval()
 
-    idx = torch.tensor([[vocab.stoi["<SOS>"]]], device=device)
+    idx = torch.tensor([[vocab.stoi["<sos>"]]], device=device)
     hidden = None
     output_tokens = []
 
@@ -53,7 +53,7 @@ def generate_lyrics(
         next_id = torch.multinomial(probs, 1)
         token = vocab.itos[next_id.item()]
 
-        if token == "<EOS>":
+        if token == "<eos>":
             break
 
         output_tokens.append(token)
@@ -65,7 +65,7 @@ def generate_lyrics(
             text.append("\n")
         elif tok == "<stanza>":
             text.append("\n\n")
-        elif tok == "<UNK>":
+        elif tok == "<unk>":
             pass
         else:
             text.append(tok + " ")
@@ -78,7 +78,7 @@ def main():
 
     train_loader, val_loader, test_loader, vocab = preprocess_data()
     vocab_size = len(vocab)
-    pad_idx = SPECIAL_TOKENS["<PAD>"]
+    pad_idx = SPECIAL_TOKENS["<pad>"]
 
     model = LyricsLSTM(
         vocab_size=vocab_size,
