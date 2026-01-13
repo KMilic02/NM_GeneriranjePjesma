@@ -1,7 +1,7 @@
 ﻿import torch, torch.nn as nn
 import torch.nn.functional as F
 from train import train_epoch, eval_epoch
-from model import LyricsLSTM
+from model import LyricsLSTM, LyricsGRU
 from data import preprocess_data, SPECIAL_TOKENS
 import os
 
@@ -80,14 +80,25 @@ def main():
     vocab_size = len(vocab)
     pad_idx = SPECIAL_TOKENS["<pad>"]
 
-    model = LyricsLSTM(
-        vocab_size=vocab_size,
-        embed_dim=128,
-        hidden_dim=256,
-        num_layers=2,
-        dropout=0.3,
-        pad_idx=pad_idx
-    ).to(device)
+    model_type = "gru"  # Možeš postaviti "gru" ili "lstm", ovisno o tome što odabereš
+    if model_type == "lstm":
+        model = LyricsLSTM(
+            vocab_size=vocab_size,
+            embed_dim=128,
+            hidden_dim=256,
+            num_layers=2,
+            dropout=0.3,
+            pad_idx=pad_idx
+        ).to(device)
+    else:
+        model = LyricsGRU(
+            vocab_size=vocab_size,
+            embed_dim=128,
+            hidden_dim=256,
+            num_layers=2,
+            dropout=0.3,
+            pad_idx=pad_idx
+        ).to(device)
 
     #model.load_state_dict(checkpoint["model_state"])
     #model.to(device)
