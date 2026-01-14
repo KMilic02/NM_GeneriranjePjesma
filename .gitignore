@@ -5,4 +5,4 @@
 .idea/
 
 #piton
-.__pycache__/
+__pycache__/
