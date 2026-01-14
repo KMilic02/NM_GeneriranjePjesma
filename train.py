@@ -1,4 +1,5 @@
 ﻿import torch
+import math
 
 def train_epoch(model, loader, optimizer, criterion, device):
     model.train()
@@ -22,7 +23,9 @@ def train_epoch(model, loader, optimizer, criterion, device):
 
         total_loss += loss.item()
 
-    return total_loss / len(loader)
+    avg_loss = total_loss / len(loader)
+    perplexity = math.exp(avg_loss)
+    return avg_loss, perplexity
 
 
 @torch.no_grad()
@@ -42,4 +45,6 @@ def eval_epoch(model, loader, criterion, device):
 
         total_loss += loss.item()
 
-    return total_loss / len(loader)
+    avg_loss = total_loss / len(loader)
+    perplexity = math.exp(avg_loss)
+    return avg_loss, perplexity

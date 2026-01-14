@@ -81,7 +81,7 @@ def main():
     pad_idx = SPECIAL_TOKENS["<pad>"]
 
     
-    model_type = "gru"  
+    model_type = "lstm"  
     if model_type == "lstm":
         model = LyricsLSTM(
             vocab_size=vocab_size,
@@ -121,8 +121,8 @@ def main():
 
     epochs = 20
     for epoch in range(epochs):
-        train_loss = train_epoch(model, train_loader, optimizer, criterion, device)
-        val_loss = eval_epoch(model, val_loader, criterion, device)
+        train_loss, train_ppl = train_epoch(model, train_loader, optimizer, criterion, device)
+        val_loss, val_ppl = eval_epoch(model, val_loader, criterion, device)
 
         save_checkpoint(
             model, optimizer, epoch + 1,
@@ -130,7 +130,7 @@ def main():
             path="checkpoints"
         )
 
-        print(f"Epoch {epoch + 1}, Train {train_loss}, Val {val_loss}")
+        print(f"Epoch {epoch + 1}, Train Loss: {train_loss:.4f} (PPL: {train_ppl:.2f}), Val Loss: {val_loss:.4f} (PPL: {val_ppl:.2f})")
 
 if __name__ == '__main__':
     main()
